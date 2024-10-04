@@ -1,0 +1,19 @@
+[0m[[0m[0mdebug[0m] [0m[0mPackaging D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\backend_2.13-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$$anonfun$authRoutes$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$$anonfun$authRoutes$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$CodeQueryParamMatcher$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$CodeQueryParamMatcher$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$SpreadsheetData$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$SpreadsheetData$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$SpreadsheetData.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$SpreadsheetData.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$SpreadsheetInfo$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$SpreadsheetInfo$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$SpreadsheetInfo.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main$SpreadsheetInfo.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Programming\Projects\OAuthIntegrationForGoogleSheets\backend\target\scala-2.13\classes\Main.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m

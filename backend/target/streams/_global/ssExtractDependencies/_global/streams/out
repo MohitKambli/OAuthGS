@@ -1,0 +1,64 @@
+[error] java.lang.RuntimeException: found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
+[error] 
+[error] 	* org.http4s:http4s-core_2.13:1.0-234-d1a2b53 (early-semver) is selected over {0.21.24}
+[error] 	    +- backend:backend_2.13:0.1.0-SNAPSHOT                (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-jawn_2.13:1.0-234-d1a2b53        (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-circe_2.13:1.0-234-d1a2b53       (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-server_2.13:0.21.24              (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-dsl_2.13:0.21.24                 (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-client_2.13:0.21.24              (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-blaze-core_2.13:0.21.24          (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-core_2.13:0.21.24                (depends on 0.21.24)
+[error] 
+[error] 	* io.circe:circe-core_2.13:0.14.9 (early-semver) is selected over {0.13.0}
+[error] 	    +- io.circe:circe-generic_2.13:0.14.9                 (depends on 0.14.9)
+[error] 	    +- org.http4s:http4s-circe_2.13:1.0-234-d1a2b53       (depends on 0.13.0)
+[error] 	    +- io.circe:circe-jawn_2.13:0.13.0                    (depends on 0.13.0)
+[error] 
+[error] 
+[error] this can be overridden using libraryDependencySchemes or evictionErrorLevel
+[error] 	at scala.sys.package$.error(package.scala:30)
+[error] 	at sbt.internal.LibraryManagement$.resolve$1(LibraryManagement.scala:90)
+[error] 	at sbt.internal.LibraryManagement$.$anonfun$cachedUpdate$12(LibraryManagement.scala:134)
+[error] 	at sbt.util.Tracked$.$anonfun$lastOutput$1(Tracked.scala:74)
+[error] 	at sbt.internal.LibraryManagement$.$anonfun$cachedUpdate$20(LibraryManagement.scala:147)
+[error] 	at scala.util.control.Exception$Catch.apply(Exception.scala:228)
+[error] 	at sbt.internal.LibraryManagement$.$anonfun$cachedUpdate$11(LibraryManagement.scala:147)
+[error] 	at sbt.internal.LibraryManagement$.$anonfun$cachedUpdate$11$adapted(LibraryManagement.scala:128)
+[error] 	at sbt.util.Tracked$.$anonfun$inputChangedW$1(Tracked.scala:220)
+[error] 	at sbt.internal.LibraryManagement$.cachedUpdate(LibraryManagement.scala:161)
+[error] 	at sbt.Classpaths$.$anonfun$updateTask0$1(Defaults.scala:3801)
+[error] 	at scala.Function1.$anonfun$compose$1(Function1.scala:49)
+[error] 	at sbt.internal.util.$tilde$greater.$anonfun$$u2219$1(TypeFunctions.scala:63)
+[error] 	at sbt.std.Transform$$anon$4.work(Transform.scala:69)
+[error] 	at sbt.Execute.$anonfun$submit$2(Execute.scala:283)
+[error] 	at sbt.internal.util.ErrorHandling$.wideConvert(ErrorHandling.scala:24)
+[error] 	at sbt.Execute.work(Execute.scala:292)
+[error] 	at sbt.Execute.$anonfun$submit$1(Execute.scala:283)
+[error] 	at sbt.ConcurrentRestrictions$$anon$4.$anonfun$submitValid$1(ConcurrentRestrictions.scala:265)
+[error] 	at sbt.CompletionService$$anon$2.call(CompletionService.scala:65)
+[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+[error] 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+[error] 	at java.base/java.lang.Thread.run(Thread.java:834)
+[error] (ssExtractDependencies) found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
+[error] 
+[error] 	* org.http4s:http4s-core_2.13:1.0-234-d1a2b53 (early-semver) is selected over {0.21.24}
+[error] 	    +- backend:backend_2.13:0.1.0-SNAPSHOT                (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-jawn_2.13:1.0-234-d1a2b53        (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-circe_2.13:1.0-234-d1a2b53       (depends on 1.0-234-d1a2b53)
+[error] 	    +- org.http4s:http4s-server_2.13:0.21.24              (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-dsl_2.13:0.21.24                 (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-client_2.13:0.21.24              (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-blaze-core_2.13:0.21.24          (depends on 0.21.24)
+[error] 	    +- org.http4s:http4s-core_2.13:0.21.24                (depends on 0.21.24)
+[error] 
+[error] 	* io.circe:circe-core_2.13:0.14.9 (early-semver) is selected over {0.13.0}
+[error] 	    +- io.circe:circe-generic_2.13:0.14.9                 (depends on 0.14.9)
+[error] 	    +- org.http4s:http4s-circe_2.13:1.0-234-d1a2b53       (depends on 0.13.0)
+[error] 	    +- io.circe:circe-jawn_2.13:0.13.0                    (depends on 0.13.0)
+[error] 
+[error] 
+[error] this can be overridden using libraryDependencySchemes or evictionErrorLevel
