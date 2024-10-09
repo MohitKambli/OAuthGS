@@ -8,6 +8,10 @@ const Dashboard = () => {
   const [selectedSheetData, setSelectedSheetData] = useState(null); // Data for the selected spreadsheet
   const [loadingSheetData, setLoadingSheetData] = useState(false); // Loading state for specific sheet data
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Number of sheets per page
+
   useEffect(() => {
     // Extract the accessToken from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -76,6 +80,21 @@ const Dashboard = () => {
     }
   };
 
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(sheets.length / itemsPerPage);
+
+  // Calculate the sheets to be displayed on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSheets = sheets.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Function to handle page changes
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   if (loading) {
     return <div>Loading spreadsheets...</div>;
   }
@@ -88,15 +107,34 @@ const Dashboard = () => {
     <div>
       <h1>Available Spreadsheets</h1>
       {sheets.length > 0 ? (
-        sheets.map((sheet) => (
-          <div
-            key={sheet.id}
-            style={{ cursor: 'pointer', marginBottom: '10px', padding: '10px', border: '1px solid black' }}
-            onClick={() => handleSheetClick(sheet.id)} // Fetch data for the clicked spreadsheet
-          >
-            {sheet.name} (ID: {sheet.id}) {/* You can display spreadsheet name or any relevant info */}
+        <>
+          {currentSheets.map((sheet) => (
+            <div
+              key={sheet.id}
+              style={{ cursor: 'pointer', marginBottom: '10px', padding: '10px', border: '1px solid black' }}
+              onClick={() => handleSheetClick(sheet.id)} // Fetch data for the clicked spreadsheet
+            >
+              {sheet.name} (ID: {sheet.id}) {/* You can display spreadsheet name or any relevant info */}
+            </div>
+          ))}
+
+          {/* Pagination controls */}
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span style={{ margin: '0 10px' }}>Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
           </div>
-        ))
+        </>
       ) : (
         <div>No spreadsheets found.</div>
       )}

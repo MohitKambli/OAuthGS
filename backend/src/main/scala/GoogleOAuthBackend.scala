@@ -1,6 +1,4 @@
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.implicits.toFoldableOps
-import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
@@ -10,22 +8,16 @@ import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.ValueRange
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.{AccessToken, GoogleCredentials}
-import cats.effect.IO
-import doobie._
-import doobie.implicits._
-import cats.implicits._
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, MediaType, Uri}
-import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Type`
 import org.http4s.implicits.http4sKleisliResponseSyntaxOptionT
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.CORS
 import org.http4s.server.middleware.CORSConfig
-
 import java.io.FileInputStream
 import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, Statement}
 import java.util
@@ -34,7 +26,6 @@ import scala.concurrent.ExecutionContext.global
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 import play.api.libs.json.{Json, Writes}
-
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -45,7 +36,6 @@ object Main extends IOApp with Http4sDsl[IO] {
   val postgresUser: String = "postgres"
   val postgresPassword: String = "Euphie017119#"
   val postgresDB: String = "oauthgs"
-  val postgresTable: String = "spreadsheet_data"
   val googleCredentialsPath: String = "src/main/scala/service-account-key.json"
   val clientId: String = "54656470738-p5cdt9lr2kmu1ut1enno6325dcnn3fi1.apps.googleusercontent.com"
   val clientSecret: String = "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"
@@ -61,9 +51,6 @@ object Main extends IOApp with Http4sDsl[IO] {
   // Google Drive API setup
   val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance
   val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
-  val driveService: Drive = new Drive.Builder(httpTransport, jsonFactory, requestInitializer)
-    .setApplicationName("OAuthGS")
-    .build()
 
   // Initialize OAuth Flow
   val flow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, jsonFactory, clientId, clientSecret, scopes.asJava)
@@ -94,7 +81,6 @@ object Main extends IOApp with Http4sDsl[IO] {
       .build()
   }
 
-
   case class SpreadsheetInfo(id: String, name: String)
 
   // Function to fetch all spreadsheets from the user's Google Drive
@@ -108,62 +94,60 @@ object Main extends IOApp with Http4sDsl[IO] {
     spreadsheets
   }
 
-
-  // Initialize Sheets API service
-  val sheetsService: Sheets = new Sheets.Builder(httpTransport, jsonFactory, requestInitializer)
-    .setApplicationName("OAuthGS")
-    .build()
   val conStr = s"jdbc:postgresql://localhost:5432/${postgresDB}?user=${postgresUser}&password=${postgresPassword}"
-
-  // Function to check if a record exists in the database
-  def recordExists(row: SpreadsheetData): Boolean = {
+  // Function to dynamically create a table based on the header row
+  def createTable(headers: List[String], tableName: String): Unit = {
     var conn: Connection = null
-    var stmt: PreparedStatement = null
-    var rs: ResultSet = null
+    var stmt: Statement = null
     try {
       conn = DriverManager.getConnection(conStr)
-      val query = s"SELECT COUNT(*) FROM ${postgresTable} WHERE col_1 = ? AND col_2 = ? AND col_3 = ?"
-      stmt = conn.prepareStatement(query)
-      stmt.setString(1, row.col_1)
-      stmt.setString(2, row.col_2)
-      stmt.setString(3, row.col_3)
-      rs = stmt.executeQuery()
-      rs.next() && rs.getInt(1) > 0 // If count > 0, record exists
+      stmt = conn.createStatement()
+      // Create SQL query to create table with dynamic columns
+      val columns = headers.map(header => s""""$header" TEXT""").mkString(", ")
+      val createTableQuery = s"""CREATE TABLE IF NOT EXISTS "$tableName" ($columns);"""
+      stmt.executeUpdate(createTableQuery)
+      println(s"Table $tableName created successfully with columns: $columns")
     } catch {
       case e: Exception =>
-        println(s"Error checking record existence: ${e.getMessage}")
+        println(s"Error creating table: ${e.getMessage}")
         e.printStackTrace()
-        false
     } finally {
-      if (rs != null) rs.close()
       if (stmt != null) stmt.close()
       if (conn != null) conn.close()
     }
   }
 
-  // Updated store function to check for duplicates before inserting
-  def storeDataInDatabase(data: List[SpreadsheetData]): Unit = {
+  // Function to insert data dynamically into the table
+  def insertDataIntoTable(data: List[SpreadsheetData], tableName: String): Unit = {
     var conn: Connection = null
     var stmt: PreparedStatement = null
     try {
       conn = DriverManager.getConnection(conStr)
-      val insertQuery = s"INSERT INTO ${postgresTable} (col_1, col_2, col_3) VALUES (?, ?, ?)"
-      stmt = conn.prepareStatement(insertQuery)
-      for (row <- data) {
-        if (!recordExists(row)) { // Check if the record already exists
-          stmt.setString(1, row.col_1)
-          stmt.setString(2, row.col_2)
-          stmt.setString(3, row.col_3)
-          stmt.addBatch()
-        } else {
-          println(s"Skipping duplicate row: $row")
+      // Assuming all rows have the same columns (headers), get the first row's columns for dynamic query generation
+      if (data.nonEmpty) {
+        val firstRowColumns = data.head.columns.keys.toList
+        // Quote the column names properly to handle case-sensitivity in PostgreSQL
+        val columns = firstRowColumns.map(col => s""""$col"""").mkString(", ")
+        val placeholders = firstRowColumns.map(_ => "?").mkString(", ")
+        // Generate the dynamic SQL for inserting data
+        val insertQuery = s"""INSERT INTO "$tableName" ($columns) VALUES ($placeholders);"""
+        stmt = conn.prepareStatement(insertQuery)
+        // Iterate through each row and add it to the batch
+        data.foreach { row =>
+          row.columns.values.zipWithIndex.foreach { case (value, index) =>
+            stmt.setString(index + 1, value) // Dynamically bind values
+          }
+          stmt.addBatch() // Add to batch
         }
+        // Execute batch insertion
+        stmt.executeBatch()
+        println(s"Data inserted successfully into $tableName.")
+      } else {
+        println("No data to insert.")
       }
-      stmt.executeBatch()
-      println("Data inserted successfully.")
     } catch {
       case e: Exception =>
-        println(s"Error occurred while inserting data: ${e.getMessage}")
+        println(s"Error inserting data: ${e.getMessage}")
         e.printStackTrace()
     } finally {
       if (stmt != null) stmt.close()
@@ -171,22 +155,32 @@ object Main extends IOApp with Http4sDsl[IO] {
     }
   }
 
-  // Function to fetch data from the spreadsheet and store it in the database
+  // Function to fetch spreadsheet data and store it in the database dynamically
   def fetchSpreadsheetData(accessToken: String, spreadsheetId: String, range: String): IO[Option[List[util.List[AnyRef]]]] = IO {
     val sheetsService = getSheetsService(accessToken)
     val request: ValueRange = sheetsService.spreadsheets().values().get(spreadsheetId, range).execute()
     val data = Option(request.getValues).map(_.asScala.toList)
+
     data.foreach { rows =>
-      val spreadsheetData = rows.map { row =>
-        SpreadsheetData(row.get(0).toString, row.get(1).toString, row.get(2).toString) // Adjust indices as per your columns
+      // Assume the first row is the header (column names)
+      val headers = rows.head.map(_.toString).toList
+      println(s"Headers: ${headers}")
+      // Create the table dynamically based on the headers
+      createTable(headers, spreadsheetId)
+      // Process the remaining rows (data)
+      val spreadsheetData = rows.tail.map { row =>
+        // Create a map of column name to value
+        val rowMap = headers.zip(row.map(_.toString)).toMap
+        SpreadsheetData(rowMap)
       }
-      storeDataInDatabase(spreadsheetData) // Insert data into the database
+      // Insert data into the dynamically created table
+      insertDataIntoTable(spreadsheetData, spreadsheetId)
     }
     data
   }
 
   // Case class to represent the spreadsheet data
-  case class SpreadsheetData(col_1: String, col_2: String, col_3: String)
+  case class SpreadsheetData(columns: Map[String, String])
 
   // Create an implicit Writes instance for SpreadsheetInfo
   implicit val spreadsheetInfoWrites: Writes[SpreadsheetInfo] = Json.writes[SpreadsheetInfo]
@@ -230,7 +224,7 @@ object Main extends IOApp with Http4sDsl[IO] {
       // Route to fetch data from a specific spreadsheet
       case GET -> Root / "spreadsheet" / accessToken / id / "data" =>
         for {
-          dataOpt <- fetchSpreadsheetData(accessToken, id, "Sheet1!A1:C4") // Specify the range as needed
+          dataOpt <- fetchSpreadsheetData(accessToken, id, "Sheet1") // Specify the range as needed
           response <- dataOpt match {
             case Some(data) => Ok(s"Data from spreadsheet $id: ${data.map(_.mkString(", ")).mkString("\n")}\n")
             case None => NotFound(s"No data found in spreadsheet $id.")
