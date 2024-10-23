@@ -1,0 +1,27 @@
+Frontend
+	Home(Component) (localhost:3000/)
+	Login with Google(Feature)
+	Backend
+		API call at "localhost:8080/auth/google/"
+		OAuth Call is made by passing in the clientId & redirectUri
+		Code is redirected to the redirectUri (localhost:8080/oauth2callback)
+		We bring along a code, which is used in turn to retrieve access tokens
+		To get the access token, we need to have clientId and clientSecret
+		We get these from the project we configured on Google's console
+		Make a call to the Frontend (URI) by passing this access token
+	Frontend
+		Call is made to fetch spreadsheets for the loggedin-user to the backend
+		Backend
+			Initiate Drive Service with required credentials
+			Fetch the spreadsheets
+			return them to frontend & display
+	Frontend
+		Select any spreadsheet
+		Pass its ID as parameter to backend
+		Create a table with by fetching the headers (columns)
+		Fetch remaining data and insert into the table
+		All this needs to be done for locally hosted Postgresql DB
+		Verify all the DB creds
+		Store the data
+Done
+		
