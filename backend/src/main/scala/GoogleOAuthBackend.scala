@@ -36,17 +36,10 @@ object Main extends IOApp with Http4sDsl[IO] {
   val postgresUser: String = "postgres"
   val postgresPassword: String = "Euphie017119#"
   val postgresDB: String = "oauthgs"
-  val googleCredentialsPath: String = "src/main/scala/service-account-key.json"
   val clientId: String = "54656470738-p5cdt9lr2kmu1ut1enno6325dcnn3fi1.apps.googleusercontent.com"
   val clientSecret: String = "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"
   val redirectUri: String = "http://localhost:8080/oauth2callback"
   val scopes: List[String] = List("https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets.readonly")
-
-  // Initialize credentials from service account file (using OAuth2 service account)
-  val serviceAccountKeyFilePath = googleCredentialsPath
-  val credentials: GoogleCredentials = GoogleCredentials.fromStream(new FileInputStream(serviceAccountKeyFilePath))
-    .createScoped(List("https://www.googleapis.com/auth/drive").asJava)
-  val requestInitializer = new HttpCredentialsAdapter(credentials)
 
   // Google Drive API setup
   val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance
