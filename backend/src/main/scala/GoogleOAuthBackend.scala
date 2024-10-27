@@ -33,11 +33,11 @@ import java.nio.charset.StandardCharsets
 object Main extends IOApp with Http4sDsl[IO] {
 
   // Configuration values
-  val postgresUser: String = "postgres"
-  val postgresPassword: String = "Euphie017119#"
-  val postgresDB: String = "oauthgs"
-  val clientId: String = "54656470738-p5cdt9lr2kmu1ut1enno6325dcnn3fi1.apps.googleusercontent.com"
-  val clientSecret: String = "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"
+  val postgresUser: String = ""
+  val postgresPassword: String = ""
+  val postgresDB: String = ""
+  val clientId: String = ""
+  val clientSecret: String = ""
   val redirectUri: String = "http://localhost:8080/oauth2callback"
   val scopes: List[String] = List("https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets.readonly")
 
@@ -195,6 +195,7 @@ object Main extends IOApp with Http4sDsl[IO] {
       case GET -> Root / "oauth2callback" :? CodeQueryParamMatcher(code) =>
         for {
           accessToken <- exchangeCodeForTokens(code) // Get the access token
+          // Access Token should be stored in DB
           redirectUri = Uri.unsafeFromString(s"http://localhost:3000/dashboard?accessToken=$accessToken") // Construct the URI safely
           response <- Found(redirectUri) // Redirect to frontend with the token
         } yield response
